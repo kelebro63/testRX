@@ -60,10 +60,11 @@ public class MainActivity extends AppCompatActivity {
         _progress.setVisibility(View.VISIBLE);
         _log("Button Clicked");
 
-        _subscription = _getObservable()//
+        _subscription = _getObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(_getObserver());                             // Observer
+      //  _getObservable();
     }
 
     @OnClick(R.id.btn_clear_operation)
@@ -109,12 +110,15 @@ public class MainActivity extends AppCompatActivity {
                     public Observable<Integer> call(Integer i) {
                         //return Observable.just(i);
                         ArrayList<Integer> list = new ArrayList<Integer>();
-                        for (int j = 0; j < i; ++j){
+                        for (int j = 0; j < i; ++j) {
                             list.add(j);
                         }
                         return Observable.from(list);
                     }
                 })
+                //.toList()
+                //.toBlocking()
+               // .first()
                 ;
 
     }
@@ -126,6 +130,32 @@ public class MainActivity extends AppCompatActivity {
      * 2. onError
      * 3. onNext
      */
+
+    //для Blocking
+//    private Observer<List<Integer>> _getObserver() {
+//        return new Observer<List<Integer>>() {
+//
+//            @Override
+//            public void onCompleted() {
+//                _log("On complete");
+//                _progress.setVisibility(View.INVISIBLE);
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                Timber.e(e, "Error in RxJava Demo concurrency");
+//                _log(String.format("Boo! Error %s", e.getMessage()));
+//                _progress.setVisibility(View.INVISIBLE);
+//            }
+//
+//            @Override
+//            public void onNext(List<Integer> i) {
+//                //_log(String.format("onNext with return value \"%b\"", bool));
+//                _log("onNext with return value" + i);
+//            }
+//        };
+//    }
+
     private Observer<Integer> _getObserver() {
         return new Observer<Integer>() {
 
