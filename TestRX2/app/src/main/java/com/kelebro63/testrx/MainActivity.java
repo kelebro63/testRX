@@ -10,6 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.fernandocejas.frodo.annotation.RxLogObservable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
         _subscription = _getObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(_getObserver());                             // Observer
-      //  _getObservable();
+                .subscribe(_getObserver());
+
+       // _getObservable();
     }
 
     @OnClick(R.id.btn_clear_operation)
@@ -85,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
 //        });
 //    }
 
-    private Observable<Integer> _getObservable() {
+    @RxLogObservable
+    private Observable<List<Integer>> _getObservable() {
 
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
@@ -116,9 +120,9 @@ public class MainActivity extends AppCompatActivity {
                         return Observable.from(list);
                     }
                 })
-                //.toList()
+                .toList()
                 //.toBlocking()
-               // .first()
+                .first()
                 ;
 
     }
@@ -132,32 +136,8 @@ public class MainActivity extends AppCompatActivity {
      */
 
     //для Blocking
-//    private Observer<List<Integer>> _getObserver() {
-//        return new Observer<List<Integer>>() {
-//
-//            @Override
-//            public void onCompleted() {
-//                _log("On complete");
-//                _progress.setVisibility(View.INVISIBLE);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Timber.e(e, "Error in RxJava Demo concurrency");
-//                _log(String.format("Boo! Error %s", e.getMessage()));
-//                _progress.setVisibility(View.INVISIBLE);
-//            }
-//
-//            @Override
-//            public void onNext(List<Integer> i) {
-//                //_log(String.format("onNext with return value \"%b\"", bool));
-//                _log("onNext with return value" + i);
-//            }
-//        };
-//    }
-
-    private Observer<Integer> _getObserver() {
-        return new Observer<Integer>() {
+    public Observer<List<Integer>> _getObserver() {
+        return new Observer<List<Integer>>() {
 
             @Override
             public void onCompleted() {
@@ -173,12 +153,38 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNext(Integer i) {
+            public void onNext(List<Integer> i) {
                 //_log(String.format("onNext with return value \"%b\"", bool));
                 _log("onNext with return value" + i);
             }
         };
     }
+
+    
+
+//    private Observer<Integer> _getObserver() {
+//        return new Observer<Integer>() {
+//
+//            @Override
+//            public void onCompleted() {
+//                _log("On complete");
+//                _progress.setVisibility(View.INVISIBLE);
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                Timber.e(e, "Error in RxJava Demo concurrency");
+//                _log(String.format("Boo! Error %s", e.getMessage()));
+//                _progress.setVisibility(View.INVISIBLE);
+//            }
+//
+//            @Override
+//            public void onNext(Integer i) {
+//                //_log(String.format("onNext with return value \"%b\"", bool));
+//                _log("onNext with return value" + i);
+//            }
+//        };
+//    }
 
     // -----------------------------------------------------------------------------------
     // Method that help wiring up the example (irrelevant to RxJava)
