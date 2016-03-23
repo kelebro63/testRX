@@ -24,6 +24,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -61,11 +62,18 @@ public class MainActivity extends AppCompatActivity {
 
         _progress.setVisibility(View.VISIBLE);
         _log("Button Clicked");
-
-        _subscription = _getObservable()
+        ConnectableObservable<List<Integer>> obs = _getObservable().publish();
+        _subscription = obs
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(_getObserver());
+
+        obs
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(_getObserver2());
+
+        obs.connect();
 
        // _getObservable();
     }
@@ -160,7 +168,31 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    
+    public Observer<List<Integer>> _getObserver2() {
+        return new Observer<List<Integer>>() {
+
+            @Override
+            public void onCompleted() {
+                _log("2On complete");
+                _progress.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Timber.e(e, "2Error in RxJava Demo concurrency");
+                _log(String.format("2Boo! Error %s", e.getMessage()));
+                _progress.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onNext(List<Integer> i) {
+                //_log(String.format("onNext with return value \"%b\"", bool));
+                _log("2onNext with return value" + i);
+            }
+        };
+    }
+
+
 
 //    private Observer<Integer> _getObserver() {
 //        return new Observer<Integer>() {
