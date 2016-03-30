@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
 
@@ -65,9 +66,28 @@ public class MainActivity extends AppCompatActivity {
         _subscription = _getObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(_getObserver());
 
-       // _getObservable();
+                //**********************1********************
+//                .subscribe(new Action1<List<Integer>>() {
+//                               @Override
+//                               public void call(List<Integer> integers) {
+//                                    String test = "";
+//                               }
+//                           }, new Action1<Throwable>() {
+//                               @Override
+//                               public void call(Throwable throwable) {
+//                                   String test = "";
+//                               }
+//                           });
+
+
+                //**************2**********************
+                .subscribe(
+                        System.out::println,
+                        error -> Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
+                );
+
+                //.subscribe(_getObserver());
     }
 
     @OnClick(R.id.btn_clear_operation)
@@ -75,18 +95,6 @@ public class MainActivity extends AppCompatActivity {
         _logs.clear();
         _adapter.clear();
     }
-
-//    private Observable<Boolean> _getObservable() {
-//
-//        return Observable.just(true).map(new Func1<Boolean, Boolean>() {
-//            @Override
-//            public Boolean call(Boolean aBoolean) {
-//                _log("Within Observable");
-//                _doSomeLongOperation_thatBlocksCurrentThread();
-//                return aBoolean;
-//            }
-//        });
-//    }
 
     @RxLogObservable
     private Observable<List<Integer>> _getObservable() {
@@ -98,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 observer.onNext("2");
                 observer.onNext("3");
                 observer.onNext("4");
+                observer.onError(new Throwable());
                 observer.onCompleted();
             }
         })
@@ -112,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
                 .flatMap(new Func1<Integer, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(Integer i) {
-                        //return Observable.just(i);
                         ArrayList<Integer> list = new ArrayList<Integer>();
                         for (int j = 0; j < i; ++j) {
                             list.add(j);
@@ -121,21 +129,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .toList()
-                //.toBlocking()
-                .first()
-                ;
+                .first();
 
     }
 
-    /**
-     * Observer that handles the result through the 3 important actions:
-     *
-     * 1. onCompleted
-     * 2. onError
-     * 3. onNext
-     */
 
-    //для Blocking
     public Observer<List<Integer>> _getObserver() {
         return new Observer<List<Integer>>() {
 
@@ -160,34 +158,6 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    
-
-//    private Observer<Integer> _getObserver() {
-//        return new Observer<Integer>() {
-//
-//            @Override
-//            public void onCompleted() {
-//                _log("On complete");
-//                _progress.setVisibility(View.INVISIBLE);
-//            }
-//
-//            @Override
-//            public void onError(Throwable e) {
-//                Timber.e(e, "Error in RxJava Demo concurrency");
-//                _log(String.format("Boo! Error %s", e.getMessage()));
-//                _progress.setVisibility(View.INVISIBLE);
-//            }
-//
-//            @Override
-//            public void onNext(Integer i) {
-//                //_log(String.format("onNext with return value \"%b\"", bool));
-//                _log("onNext with return value" + i);
-//            }
-//        };
-//    }
-
-    // -----------------------------------------------------------------------------------
-    // Method that help wiring up the example (irrelevant to RxJava)
 
     private void _doSomeLongOperation_thatBlocksCurrentThread() {
         _log("performing long operation");
@@ -237,4 +207,6 @@ public class MainActivity extends AppCompatActivity {
             super(context, R.layout.item_log, R.id.item_log, logs);
         }
     }
+
+
 }

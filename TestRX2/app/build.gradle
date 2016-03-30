@@ -5,13 +5,21 @@ buildscript {
     repositories {
         jcenter()
     }
+    repositories {
+        mavenCentral()
+    }
     dependencies {
         classpath "com.fernandocejas.frodo:frodo-plugin:0.8.2"
+        classpath 'me.tatarka:gradle-retrolambda:3.2.5'
     }
+}
+repositories {
+    mavenCentral()
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.fernandocejas.frodo'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 23
@@ -36,6 +44,10 @@ android {
             versionNameSuffix "-release"
             signingConfig signingConfigs.debug
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
