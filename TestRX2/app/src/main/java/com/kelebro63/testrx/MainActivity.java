@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.fernandocejas.frodo.annotation.RxLogObservable;
 
@@ -82,12 +81,14 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //**************2**********************
-                .subscribe(
-                        System.out::println,
-                        error -> Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
-                );
+//                .subscribe(
+//                        System.out::println,
+//                        error -> Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show()
+//                );
 
-                //.subscribe(_getObserver());
+
+        //*********************3***********************
+                .subscribe(_getObserver());
     }
 
     @OnClick(R.id.btn_clear_operation)
@@ -110,6 +111,9 @@ public class MainActivity extends AppCompatActivity {
                 observer.onCompleted();
             }
         })
+//                .onErrorReturn(throwable -> {
+//                    return "100";
+//                })
                 .map(new Func1<String, Integer>() {
                     @Override
                     public Integer call(String s) {
@@ -118,6 +122,9 @@ public class MainActivity extends AppCompatActivity {
                         return Integer.valueOf(s);
                     }
                 })
+//                .onErrorReturn(throwable -> {
+//                    return 100;
+//                })
                 .flatMap(new Func1<Integer, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(Integer i) {
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         return Observable.from(list);
                     }
                 })
+             //   .onErrorResumeNext(throwable -> {return Observable.just(1);})
                 .toList()
                 .first();
 
